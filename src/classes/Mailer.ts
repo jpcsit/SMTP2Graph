@@ -157,7 +157,7 @@ export class Mailer
                 break;
             else if(line.toLowerCase().startsWith('sender:') || line.toLowerCase().startsWith('from:')) // Found the sender?
             {
-                const parsed = addressparser(line.substring(line.indexOf(':')+1), {flatten: true});
+                const parsed = addressparser(this.#extractEmail(line).substring(line.indexOf(':')+1), {flatten: true});
                 if(parsed.length && parsed[0].address) // We got an address?
                 {
                     readStream.destroy();
@@ -181,4 +181,20 @@ export class Mailer
         });
     }
 
+    static #extractEmail(header: string): string {
+        // First, try to find <...>
+        const bracketMatch = header.match(/<([^>]+)>/);
+        if (bracketMatch) {
+          return `From: ${bracketMatch[1]}`;
+        }
+       
+        // Otherwise, find an email address directly
+        const plainMatch = header.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i);
+        if (plainMatch) {
+          return `From: ${plainMatch[0]}`;
+        }
+       
+        // Fallback: return unchanged
+        return header;
+    }
 }
