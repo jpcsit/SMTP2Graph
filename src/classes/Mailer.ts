@@ -37,15 +37,20 @@ export class Mailer
     {
         return this.#sendSemaphore.runExclusive(async ()=>{
             // Determine the sender
-            let sender = null; 
-            const senderObj = await this.#findSender(filePath);
-            if(!senderObj) // There's no forced sender in the config, so we get it from the mail data
+            let sender = Config.forceMailbox;
+            if(!sender) // There's no forced sender in the config, so we get it from the mail data
             {
-                sender = Config.forceMailbox;
-                if (!sender) throw new UnrecoverableError('No sender/from address defined');
-            } else {
-                sender = senderObj.address;
+                const senderObj = await this.#findSender(filePath);
+                if(!senderObj) 
+                {
+                    let backupsender = Config.backupMailbox;
+                    if(!backupsender) throw new UnrecoverableError('No sender/from address defined');
+                    sender = backupsender;
+                } else {
+                    sender = senderObj.address;
+                }
             }
+
             // Fetch an accesstoken if needed
             const token = await this.#aquireToken();
 
