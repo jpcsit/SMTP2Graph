@@ -30,6 +30,8 @@ export interface IConfig
         retryInterval?: number;
         /** Always send from this mailbox */
         forceMailbox?: string;
+        /** Backup sender mailbox */
+        backupMailbox?: string;
     },
     receive?: {
         /** The port on which the SMTP server will listen (default: 25) */
@@ -194,6 +196,11 @@ export class Config
     static get forceMailbox()
     {
         return this.#config.send?.forceMailbox;
+    }
+
+    static get backupMailbox()
+    {
+        return this.#config.send?.backupMailbox;
     }
 
     static get smtpPort(): number

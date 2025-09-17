@@ -1,18 +1,30 @@
-FROM node:20-alpine
+# Use Node.js LTS
+FROM node:22-alpine
 
-ARG VERSION
-LABEL version="SMTP2Graph v${VERSION}"
+# Install git
+RUN apk add --no-cache git
 
-# Add SMTP2Graph binary
-COPY dist/server.js /bin/smtp2graph.js
-COPY docker/startup.sh /bin/
-COPY docker/test.sh /bin/
+# Working directory
+WORKDIR /app
 
-# Set execute permissions
-RUN chmod +x /bin/startup.sh
-RUN chmod +x /bin/test.sh
+# Clone repo
+RUN git clone --depth 1 https://github.com/jpcsit/SMTP2Graph.git .
 
+# Install dependencies & build dist
+RUN npm install && npm run build
+
+# Copy startup scripts to /bin
+RUN cp dist/server.js /bin/smtp2graph.js && \
+    cp docker/startup.sh /bin/startup.sh && \
+    cp docker/test.sh /bin/test.sh && \
+    chmod +x /bin/startup.sh /bin/test.sh
+
+# Data directory
 WORKDIR /data
 VOLUME /data
+
+# Expose SMTP port
 EXPOSE 587
-ENTRYPOINT startup.sh
+
+# Run entrypoint
+ENTRYPOINT ["/bin/startup.sh"]

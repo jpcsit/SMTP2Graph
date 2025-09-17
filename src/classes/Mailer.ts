@@ -41,8 +41,14 @@ export class Mailer
             if(!sender) // There's no forced sender in the config, so we get it from the mail data
             {
                 const senderObj = await this.#findSender(filePath);
-                if(!senderObj) throw new UnrecoverableError('No sender/from address defined');
-                sender = senderObj.address;
+                if(!senderObj) 
+                {
+                    let backupsender = Config.backupMailbox;
+                    if(!backupsender) throw new UnrecoverableError('No sender/from address defined');
+                    sender = backupsender;
+                } else {
+                    sender = senderObj.address;
+                }
             }
 
             // Fetch an accesstoken if needed
