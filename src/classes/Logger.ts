@@ -1,5 +1,8 @@
 import path from 'path';
 import winston from 'winston';
+import { Config } from './Config';
+
+const DEBUGMODE = Config.loglevel:'info';
 
 export interface ILogMeta extends Record<string, any>
 {

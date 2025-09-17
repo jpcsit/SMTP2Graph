@@ -10,6 +10,7 @@ if(baseDir) process.chdir(baseDir);
 export interface IConfig
 {
     mode: 'full'|'receive'|'send';
+    loglevel: 'verbose'|'info'|'warn'|'error';
     send?: {
         appReg: {
             /** The tenant name (the part that comes before .onmicrosoft.com) */
