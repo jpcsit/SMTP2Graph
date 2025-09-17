@@ -147,7 +147,7 @@ export class SMTPServer
         //const tmpFile = path.join(this.#queue.tempPath, `${session.id}.eml`);
         const hash = crypto
             .createHash("sha256")
-            .update(stream + session.id)
+            .update(Date.now().toString()+session.id)
             .digest("hex");
         const tmpFile = path.join(this.#queue.tempPath, `${hash}.eml`);
         const writeStream = fs.createWriteStream(tmpFile);
