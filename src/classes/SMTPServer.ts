@@ -101,7 +101,10 @@ export class SMTPServer
 
     #onData: SMTPServerOptions['onData'] = (stream, session, callback)=>
     {
-        log('info', `SMTPServer::onData() from=${session.envelope.mailFrom.address}, to=${session.envelope.rcptTo.map(r=>r.address).join(',')}, id=${session.id}`);
+        // Add logging for successful (normal) operations
+        const fromJson = JSON.stringify(session.envelope.mailFrom);
+        const toJson = JSON.stringify(session.envelope.rcptTo);
+        log('info', `SMTPServer::onData() from=${fromJson}, to=${toJson}, id=${session.id}`);
 
         if(!session.envelope.mailFrom)
         {
