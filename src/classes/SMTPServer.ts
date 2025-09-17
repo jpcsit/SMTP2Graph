@@ -166,6 +166,7 @@ export class SMTPServer
                 });
             }
         });
+        await new Promise(resolve => setTimeout(resolve, 1000)) /
     };
     
 }
