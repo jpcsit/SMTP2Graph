@@ -64,6 +64,8 @@ export class SMTPServer
     {
         if(Config.isIpAllowed(session.remoteAddress))
         {
+            log('info', `SMTPServer::onConnect() address=${session.remoteAddress}`);
+
             this.#rateLimiter.consume('all').then((rateLimit)=>{
                 callback();
             }).catch((rateLimit: RateLimiterRes)=>{
@@ -79,9 +81,10 @@ export class SMTPServer
         this.#authLimiter.consume(session.remoteAddress).then((rateLimit)=>{
             if(!auth.username || !auth.password)
                 callback(new Error('Unsupported authentication method'));
-            else if(Config.isUserAllowed(auth.username, auth.password))
+            else if(Config.isUserAllowed(auth.username, auth.password)) {
+                log('info', `SMTPServer::onAuth() user=${auth.username}`);
                 callback(null, {user: auth.username});
-            else
+            } else
                 callback(new Error('Invalid login'));
         }).catch((rateLimit: RateLimiterRes)=>{
             callback(new Error(`Too many failed logins`));
@@ -98,6 +101,8 @@ export class SMTPServer
 
     #onData: SMTPServerOptions['onData'] = (stream, session, callback)=>
     {
+        log('info', `SMTPServer::onData() from=${session.envelope.mailFrom.address}, to=${session.envelope.rcptTo.map(r=>r.address).join(',')}, id=${session.id}`);
+
         if(!session.envelope.mailFrom)
         {
             callback(new Error('Missing FROM'));
@@ -160,6 +165,7 @@ export class SMTPServer
             }
             else
             {
+                log('info', `SMTPServer::onData() completed id=${session.id}`);
                 callback();
                 writeStream.close(()=>{
                     this.#queue.add(tmpFile);
