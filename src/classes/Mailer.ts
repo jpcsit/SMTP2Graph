@@ -8,6 +8,7 @@ import { ConfidentialClientApplication } from '@azure/msal-node';
 import { Config } from './Config';
 import { UnrecoverableError } from './Constants';
 import { MsalProxy } from './MsalProxy';
+import { log } from './Logger';
 
 export class MailboxAccessDenied extends UnrecoverableError { }
 export class InvalidMailContent extends UnrecoverableError { }
@@ -57,6 +58,7 @@ export class Mailer
             // Send the message
             const readStream = fs.createReadStream(filePath);
             try {
+                log('info', `Mail queued`, {filePath});
                 await this.#retryableRequest({
                     method: 'post',
                     url: `https://graph.microsoft.com/v1.0/users/${sender}/sendMail`,
