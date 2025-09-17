@@ -8,7 +8,9 @@ import { ConfidentialClientApplication } from '@azure/msal-node';
 import { Config } from './Config';
 import { UnrecoverableError } from './Constants';
 import { MsalProxy } from './MsalProxy';
-import { log } from './Logger';
+import { prefixedLog } from './Logger';
+
+const log = prefixedLog('Mailer');
 
 export class MailboxAccessDenied extends UnrecoverableError { }
 export class InvalidMailContent extends UnrecoverableError { }
