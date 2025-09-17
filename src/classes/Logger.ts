@@ -18,7 +18,8 @@ const consoleFormat = winston.format.combine(
 );
 
 const logger = winston.createLogger({
-    level: DEBUG?'verbose':'info',
+    //level: DEBUG?'verbose':'info',
+    level: DEBUGMODE,
     format: winston.format.combine(
         winston.format.timestamp({format: 'isoDateTime'}),
         winston.format.json(),
