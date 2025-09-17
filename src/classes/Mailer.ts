@@ -195,15 +195,18 @@ export class Mailer
         // First, try to find <...>
         const bracketMatch = header.match(/<([^>]+)>/);
         if (bracketMatch) {
-          return `From: ${bracketMatch[1]}`;
+            log('info', `extractEmail barcketMatch: ${bracketMatch[1]}`);
+            return `From: ${bracketMatch[1]}`;
         }
        
         // Otherwise, find an email address directly
         const plainMatch = header.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i);
         if (plainMatch) {
-          return `From: ${plainMatch[0]}`;
+            log('info', `extractEmail plainMatch: ${plainMatch[0]}`);
+            return `From: ${plainMatch[0]}`;
         }
        
+        log('info', `extractEmail: ${header}`);
         // Fallback: return unchanged
         return header;
     }
