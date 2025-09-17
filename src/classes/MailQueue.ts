@@ -58,7 +58,7 @@ export class MailQueue
     async #onFileAdded(filePath: string)
     {
         const filename = path.basename(filePath);
-        log('verbose', `File "${filename}" appeared in the queue`);
+        log('info', `File "${filename}" appeared in the queue`);
         
         try {
             await Mailer.sendEml(filePath);
