@@ -2,7 +2,7 @@ import path from 'path';
 import winston from 'winston';
 import { Config } from './Config';
 
-const DEBUGMODE = Config.loglevel:'info';
+const LOGLEVEL = Config.loglevel:'info';
 
 export interface ILogMeta extends Record<string, any>
 {
@@ -19,7 +19,7 @@ const consoleFormat = winston.format.combine(
 
 const logger = winston.createLogger({
     //level: DEBUG?'verbose':'info',
-    level: DEBUGMODE,
+    level: LOGLEVEL,
     format: winston.format.combine(
         winston.format.timestamp({format: 'isoDateTime'}),
         winston.format.json(),

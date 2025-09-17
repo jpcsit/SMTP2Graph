@@ -79,6 +79,7 @@ export class MailQueue
             if(data && data.retryCount >= Config.sendRetryLimit) // This file is already in the queue and exceeded the retry limit?
             {
                 try {
+                    log('info', `Added "${filename}" to RETRY queue`);
                     this.#retryQueue.delete(filename); // Remove from queue
                     fs.renameSync(path.join(this.#queuePath, filename), path.join(this.#failedPath, filename)); // Move to failed dir
                 } catch(error) {
@@ -136,8 +137,8 @@ export class MailQueue
     {
         const filename = path.basename(filePath);
         try {
+            log('info', `Moved file "${filename}" to queue`);
             fs.renameSync(filePath, path.join(this.#queuePath, filename));
-            log('verbose', `Moved file "${filename}" to queue`);
         } catch(error) {
             log('error', `Error while moving "${filename}" to queue`, {error});
         }
