@@ -21,7 +21,7 @@ export class Mailer
     /** Prevent getting an accesstoken in parallel */
     static #aquireTokenMutex = new Mutex();
     /** Prevent sending more than 4 messages in parallel (see: https://learn.microsoft.com/en-us/graph/throttling-limits#outlook-service-limits) */
-    static #sendSemaphore = new Semaphore(4);
+    static #sendSemaphore = new Semaphore(100);
 
     static #msalClient = (Config.clientId && (Config.clientSecret || (Config.clientCertificateThumbprint && Config.clientCertificateKeyPath)))?new ConfidentialClientApplication({
         auth: {
