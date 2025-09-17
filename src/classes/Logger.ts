@@ -2,7 +2,7 @@ import path from 'path';
 import winston from 'winston';
 import { Config } from './Config';
 
-const LOGLEVEL = Config.loglevel:'info';
+const LOGLEVEL = Config.loglevel || 'info';
 
 export interface ILogMeta extends Record<string, any>
 {

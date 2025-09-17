@@ -140,6 +140,11 @@ export class Config
             throw new InvalidConfig(`Property "httpProxy.password" is defined without "httpProxy.username"`);
     }
 
+    static get loglevel()
+    {
+        return this.#config.mode.toLowerCase() as IConfig['loglevel'];
+    }
+
     static get mode()
     {
         return this.#config.mode.toLowerCase() as IConfig['mode'];
