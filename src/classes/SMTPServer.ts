@@ -9,6 +9,7 @@ const Joiner = require('mailsplit').Joiner;
 import { Config } from './Config';
 import { prefixedLog } from './Logger';
 import { MailQueue } from './MailQueue';
+import crypto from "crypto";
 
 const log = prefixedLog('SMTPServer');
 
@@ -151,7 +152,13 @@ export class SMTPServer
         });
 
         // Create the EML file
-        const tmpFile = path.join(this.#queue.tempPath, `${session.id}.eml`);
+        const hash = crypto
+            .createHash("sha256")
+            .update(session.id+Date.now().toString())
+            .digest("hex");
+        //const tmpFile = path.join(this.#queue.tempPath, `${session.id}.eml`);
+        const tmpFile = path.join(this.#queue.tempPath, `${hash}.eml`);
+
         const writeStream = fs.createWriteStream(tmpFile);
         const mailCompile = mail.compile();
         (mailCompile as any).keepBcc = true;
