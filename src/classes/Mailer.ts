@@ -151,6 +151,7 @@ export class Mailer
     /** Get sender address from EML/RFC822 data */
     static async #findSender(filePath: string)
     {
+        const validUsers = Config.smtpUsers ? Config.smtpUsers.map(u=>u.username.toLowerCase()) : [];
         const readStream = fs.createReadStream(filePath);
         const reader = readline.createInterface({
             input: readStream,
@@ -164,7 +165,7 @@ export class Mailer
             else if(line.toLowerCase().startsWith('sender:') || line.toLowerCase().startsWith('from:')) // Found the sender?
             {
                 const parsed = addressparser(this.#extractEmail(line).substring(line.indexOf(':')+1), {flatten: true});
-                if(parsed.length && parsed[0].address) // We got an address?
+                if(parsed.length && parsed[0].address && validUsers.includes(parsed[0].address.toLowerCase())) // We got an address?
                 {
                     readStream.destroy();
                     return parsed[0];
@@ -188,16 +189,18 @@ export class Mailer
     }
 
     static #extractEmail(header: string): string {
+        const headerName = header.toLowerCase().startsWith('sender:') ? 'Sender' : 'From';
+
         // First, try to find <...>
         const bracketMatch = header.match(/<([^>]+)>/);
         if (bracketMatch) {
-          return `From: ${bracketMatch[1]}`;
+          return `${headerName}: ${bracketMatch[1]}`;
         }
        
         // Otherwise, find an email address directly
         const plainMatch = header.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i);
         if (plainMatch) {
-          return `From: ${plainMatch[0]}`;
+          return `${headerName}: ${plainMatch[0]}`;
         }
        
         // Fallback: return unchanged
