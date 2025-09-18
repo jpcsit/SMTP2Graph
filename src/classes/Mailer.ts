@@ -49,6 +49,7 @@ export class Mailer
                 {
                     let backupsender = Config.backupMailbox;
                     if(!backupsender) throw new UnrecoverableError('No sender/from address defined');
+                    log('info', `Using backup sender: ${backupsender}`);
                     sender = backupsender;
                 } else {
                     sender = senderObj.address;
@@ -176,13 +177,13 @@ export class Mailer
                     if (!allowedSenders || (allowedSenders && allowedSenders.includes(parsed[0].address.toLowerCase()))) {
                         log('info', `Determined sender: ${parsed[0].address}`);
                         readStream.destroy();
-                        return undefined;
+                        return parsed[0].address;
                     }
                 }
             }
         }
-
         readStream.destroy();
+        return undefined;
     }
 
     static async #aquireToken(): Promise<string>
