@@ -38,6 +38,7 @@ export class Mailer
 
     static async sendEml(filePath: string)
     {
+        
         return this.#sendSemaphore.runExclusive(async ()=>{
             // Determine the sender
             let sender = Config.forceMailbox;
@@ -161,6 +162,8 @@ export class Mailer
             crlfDelay: Infinity, // To treat \r\n and \n the same
         });
 
+        const allowedSenders = Config.smtpUsers?.map(s=>s.username.toLowerCase());
+  
         for await(const line of reader)
         {
             if(line === '') // We've reached the end of the headers?
@@ -170,8 +173,11 @@ export class Mailer
                 const parsed = addressparser(this.#extractEmail(line).substring(line.indexOf(':')+1), {flatten: true});
                 if(parsed.length && parsed[0].address) // We got an address?
                 {
-                    readStream.destroy();
-                    return parsed[0];
+                    if (!allowedSenders || (allowedSenders && allowedSenders.includes(parsed[0].address.toLowerCase()))) {
+                        log('info', `Determined sender: ${parsed[0].address}`);
+                        readStream.destroy();
+                        return undefined;
+                    }
                 }
             }
         }
